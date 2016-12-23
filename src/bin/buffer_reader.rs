@@ -18,7 +18,7 @@ fn main() {
     let f: File = match res_file {
         Ok(file) => file,
         Err(err) => {
-            println!("Err: opening file {:?}", err);
+            println!("Err: opening a file: {}", err);
             process::exit(1);
         },
     };
@@ -30,7 +30,7 @@ fn main() {
     match res_read {
         Ok(n) => println!("{}: {:?}", n, test),
         Err(err) => {
-            println!("Err: reading a file: {:?}", err);
+            println!("Err: reading a file: {}", err);
         },
     }
 }
