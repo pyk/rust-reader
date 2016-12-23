@@ -4,6 +4,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::io;
 use std::io::Read;
+use std::io::BufRead;
 
 fn main() {
     // Parse the arguments
@@ -14,7 +15,7 @@ fn main() {
     }
 
     let file_name: String = arguments[1].clone();
-    let res_file: Result<File, io::Error> = File::open(file_name);
+    let res_file: Result<File, io::Error> = File::open(file_name.clone());
     let f: File = match res_file {
         Ok(file) => file,
         Err(err) => {
@@ -32,5 +33,25 @@ fn main() {
         Err(err) => {
             println!("Err: reading a file: {}", err);
         },
+    }
+
+    // read file line by line
+    let res_file: Result<File, io::Error> = File::open(file_name.clone());
+    let f1: File = match res_file {
+        Ok(file) => file,
+        Err(err) => {
+            println!("Err: opening a file: {}", err);
+            process::exit(1);
+        },
+    };
+    let reader_line: BufReader<File> = BufReader::new(f1);
+    for res_line in reader_line.lines() {
+        match res_line {
+            Ok(s) => println!("Line: {:?}", s),
+            Err(err) => {
+                println!("Err: line-by-line: {:?}", err);
+                process::exit(1);
+            },
+        }
     }
 }
