@@ -1,9 +1,9 @@
 use std::env;
 use std::process;
-use std::io::BufReader;
-use std::fs::File;
 use std::io;
-use std::io::Read;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::BufRead;
 
 fn main() {
     // Parse the arguments
@@ -13,6 +13,7 @@ fn main() {
         process::exit(1);
     }
 
+    // Access file
     let file_name: String = arguments[1].clone();
     let res_file: Result<File, io::Error> = File::open(file_name);
     let f: File = match res_file {
@@ -23,15 +24,15 @@ fn main() {
         },
     };
 
-    let mut reader: BufReader<File> = BufReader::new(f);
-    let mut test: String = String::new();
-    let res_read: Result<usize, io::Error>;
-    res_read = reader.read_to_string(&mut test);
-    match res_read {
-        Ok(n) => println!("{}: {:?}", n, test),
-        Err(err) => {
-            println!("Err: reading a file: {}", err);
-        },
+    // read file line by line
+    let reader: BufReader<File> = BufReader::new(f);
+    for res_line in reader.lines() {
+        match res_line {
+            Ok(s) => println!("Line: {:?}", s),
+            Err(err) => {
+                println!("Err: line-by-line: {:?}", err);
+                process::exit(1);
+            },
+        }
     }
-
 }
