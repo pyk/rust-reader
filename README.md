@@ -10,6 +10,7 @@ An implementation of stream reader in Rust programming language.
 ## Run
 
     ./target/debug/buffer_reader some.txt
+    ./target/debug/buffer_line some.txt
 
 ## References
 
