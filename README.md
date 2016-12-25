@@ -11,6 +11,7 @@ An implementation of stream reader in Rust programming language.
 
     ./target/debug/buffer_reader some.txt
     ./target/debug/buffer_line some.txt
+    ./target/debug/buffer_bytes some.txt
 
 ## References
 
