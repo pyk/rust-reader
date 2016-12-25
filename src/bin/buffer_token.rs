@@ -43,7 +43,6 @@ fn main() {
                 Ok(s) => s,
                 Err(err) => {
                     println!("Err: convert bytes to utf-8: {:?}", err);
-                    println!("bytes: {:?}", bytes);
                     continue;
                 },
             };
