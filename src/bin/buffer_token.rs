@@ -21,34 +21,55 @@ fn main() {
         },
     };
 
-    // Read file word by word
+    // Extract token that separated by whitespace from file
     let reader: BufReader<File> = BufReader::new(f);
-    let mut bytes: Vec<u8> = Vec::with_capacity(256);
+    const MAX_BYTES: usize = 256;
+    let mut bytes: Vec<u8> = Vec::with_capacity(MAX_BYTES);
     for res_byte in reader.bytes() {
-        let b: u8 = match res_byte {
+        let byte: u8 = match res_byte {
             Ok(b) => b,
             Err(err) => {
                 println!("Err: read bytes: {:?}", err);
                 process::exit(1);
             },
         };
-        let c: char = b as char;
-        if !c.is_whitespace() {
-            if bytes.len() == 256 { bytes.reserve(256); };
-            bytes.push(b);
-        } else {
-            // skip if bytes is empty
-            if bytes.len() == 0 { continue; };
-            let word: String = match String::from_utf8(bytes.clone()) {
-                Ok(s) => s,
-                Err(err) => {
-                    println!("Err: convert bytes to utf-8: {:?}", err);
-                    continue;
-                },
-            };
 
-            println!("token: {:?}", word);
-            bytes.clear();
+        // UTF-8 range
+        // 0 - 127 => single-byte character
+        // 128 - 191 => Continuation bytes
+        // 194 - 244 => leading bytes
+        // 192,193,245-255 => invalid utf-8
+        match byte {
+            // Handle single-byte character
+            byte if (byte <= 127) => {
+                let c: char = byte as char;
+                if !c.is_whitespace() {
+                    if bytes.len() == MAX_BYTES { 
+                        bytes.reserve(MAX_BYTES); 
+                    };
+                    bytes.push(byte);
+                } else {
+                    // skip if bytes is empty
+                    if bytes.len() == 0 { continue; };
+                    let token: String;
+                    token = match String::from_utf8(bytes.clone()) {
+                        Ok(s) => s,
+                        Err(err) => {
+                            println!("Err: convert bytes to String: {:?}", 
+                                err);
+                            bytes.clear();
+                            continue;
+                        },
+                    };
+
+                    println!("token: {:?}", token);
+                    bytes.clear();
+                }
+            }
+            // Just push the leading and continuation bytes to bytes buffer
+            _ => {
+                bytes.push(byte);
+            }
         }
     }
 }
